@@ -3,5 +3,10 @@
   "packageManager": "yarn@3.5.0",
   "description": "A Discord bot for notifying about users playing games",
   "main": "run.js",
-  "author": "Andy Rakauskas <andy.rak@gmail.com>"
+  "author": "Andy Rakauskas <andy.rak@gmail.com>",
+  "dependencies": {
+    "discord.js": "^14.9.0",
+    "dotenv": "^16.0.3",
+    "mocha": "^10.2.0"
+  }
 }
