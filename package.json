@@ -1,15 +1,7 @@
 {
   "name": "gameon",
-  "version": "0.0.1",
-  "description": "A discord bot for notifying about users playing games",
+  "packageManager": "yarn@3.5.0",
+  "description": "A Discord bot for notifying about users playing games",
   "main": "run.js",
-  "repository": "",
-  "author": "Robert Flack <flackr@gmail.com>",
-  "dependencies": {
-    "discord.js": "~11.4.2",
-    "mocha": "~5.2.0"
-  },
-  "scripts": {
-    "test": "mocha"
-  }
+  "author": "Andy Rakauskas <andy.rak@gmail.com>"
 }
