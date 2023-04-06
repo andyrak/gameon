@@ -151,3 +151,4 @@ dist
 
 # Built Visual Studio Code Extensions
 *.vsix
+.vscode/launch.json

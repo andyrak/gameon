@@ -8,13 +8,13 @@
       '`unsubscribe <game>`: Remove your subscription for `game`';
 
   class Bot {
-    constructor(configuration, hooks) {
+    constructor(configuration, intents, token, hooks) {
       // Configuration map:
       // {token: '<discord-token>',
       //  guilds: {guild: {game => {user: true}}}}
       this.configuration_ = configuration;
       this.hooks_ = hooks;
-      this.client_ = new hooks.Discord.Client();
+      this.client_ = new hooks.Discord.Client({intents: intents});
       this.ping_ = undefined;
 
       // Map of guild => game => count of users playing it.
@@ -22,10 +22,10 @@
 
       this.client_.on('ready', () => {
         this.ping_ = '<@' + this.client_.user.id + '>';
-        this.client_.on('message', this.onMessage.bind(this));
+        this.client_.on('messageCreate', this.onMessage.bind(this));
         this.client_.on('presenceUpdate', this.onPresenceUpdate.bind(this));
       });
-      this.client_.login(configuration.token);
+      this.client_.login(token);
     }
 
     nearest(guild, query, maxDistance) {
@@ -121,8 +121,18 @@
     }
 
     onPresenceUpdate(oldMember, newMember) {
-      let oldGame = oldMember.presence.game;
-      let game = newMember.presence.game;
+      let oldGame = oldMember?.activities?.filter((activity) => {
+        if(activity.type != 0){return false};
+
+        return activity.name;
+      });
+
+      let game = newMember?.activities?.filter((activity) => {
+        if(activity.type != 0){return false};
+
+        return activity.name;
+      });
+
       if (oldGame) {
         if (this.gameCount_[oldMember.guild.id]) {
           if (this.gameCount_[oldMember.guild.id][oldGame])
@@ -149,9 +159,14 @@
             messageStr += '<@' + user + '>';
           }
           if (messageStr) {
-            messageStr += ': people started playing ' + game;
-            let defaultChannel = this.client_.guilds.get(guild).defaultChannel;
-            defaultChannel.send(messageStr);
+            messageStr += ': someone started playing ' + game;
+            this.client_.channels.fetch(this.configuration_.channel)
+              .then(channel => channel.send(messageStr));
+            if (this.gameCount_[guild][game] >= 2 && this.configuration_.role) {
+              let groupMessage = '<@&' + this.configuration_.role +'> the crew is playing ' + game + '!';
+              this.client_.channels.fetch(this.configuration_.channel)
+              .then(channel => channel.send(groupMessage));
+            }
           }
         }
         this.gameCount_[guild][game]++;
@@ -159,8 +174,8 @@
     }
   }
 
-  exports.create = function(config, hooks) {
-    return new Bot(config, hooks);
+  exports.create = function(config, intents, token, hooks) {
+    return new Bot(config, intents, token, hooks);
   }
 
 })(typeof exports === 'undefined' ? this['Bot'] = {} : exports, this);

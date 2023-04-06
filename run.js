@@ -1,3 +1,4 @@
+require('dotenv').config();
 const fs = require('fs');
 const Bot = require('./bot.js');
 const Discord = require('discord.js');
@@ -12,8 +13,8 @@ function save(configuration) {
 };
 
 function validateConfig(configuration) {
-  if (!configuration.token) {
-    console.error('Error: configuration file missing token.');
+  if(!configuration.channel){
+    console.error('Error: configuration file missing channel ID.');
     return null;
   }
   configuration.guilds = configuration.guilds || {};
@@ -22,8 +23,7 @@ function validateConfig(configuration) {
 
 fs.readFile(CONFIG_FILE, (err, data) => {
   if (err) {
-    console.log('Error: No configuration file.');
-    console.log('Write one with at least {"token": "your-token"}');
+    console.log('Error: Bad configuration file.');
   } else {
     let configuration = validateConfig(JSON.parse(data));
     if (!configuration)
@@ -33,7 +33,12 @@ fs.readFile(CONFIG_FILE, (err, data) => {
     // Rewrite the config file to pretty-print handcoded config.
     save(configuration);
 
-    Bot.create(configuration, /* hooks = */ {
+    Bot.create(configuration, 
+      [Discord.GatewayIntentBits.Guilds,  
+        Discord.GatewayIntentBits.GuildMembers,
+        Discord.GatewayIntentBits.GuildMessages, 
+        Discord.GatewayIntentBits.GuildPresences],
+      process.env.CLIENT_TOKEN, /* hooks = */ {
       Discord,
       save, 
     });
