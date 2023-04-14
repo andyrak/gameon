@@ -1,6 +1,6 @@
 (function(exports, scope) {
 
-  const Levenshtein = require('./levenshtein.js');
+  const levenshtein = require('js-levenshtein');
   const MAX_DISTANCE = 4;
 
   const COMMANDS_LIST = '**Commands:**\n' +
@@ -32,7 +32,7 @@
       let closest = undefined;
       let closestDistance = maxDistance + 1;
       for (let game in this.configuration_.guilds[guild].games) {
-        let dist = Levenshtein.distance(game.toLowerCase(), query.toLowerCase());
+        let dist = levenshtein.distance(game.toLowerCase(), query.toLowerCase());
         if (dist < closestDistance) {
           closest = game;
           closestDistance = dist;
