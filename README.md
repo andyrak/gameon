@@ -16,7 +16,7 @@ Discord bot to notify when people start playing games.
     "token": "<your-token>", 
     "channel": "<your-channel-id>", 
     "role": "<your-role-id>"
-    }
+}
 ```
 3. `yarn install`
 4. `node run.js`
